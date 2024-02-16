@@ -97,25 +97,25 @@ int calcCoins(int amountToCalculate)
         calcTotQuarters(amountToCalculate);
     }
     else
-    new = amountToCalculate / dime;
-        if (new >= 1)
-        {
-            calcNumDimes(amountToCalculate);
-            calcTotDimes(amountToCalculate);
-        }
-        else
+        new = amountToCalculate / dime;
+    if (new >= 1)
+    {
+        calcNumDimes(amountToCalculate);
+        calcTotDimes(amountToCalculate);
+    }
+    else
         new = amountToCalculate / nickel;
-            if (new >= 1)
-            {
-                calcNumNickels(amountToCalculate);
-                calcTotNickels(amountToCalculate);
-            }
-            else
-            new = amountToCalculate / penny;
-                if (new >= 1)
-                {
-                    calcNumPennys(amountToCalculate);
-                    calcTotPennys(amountToCalculate);
-                }
+    if (new >= 1)
+    {
+        calcNumNickels(amountToCalculate);
+        calcTotNickels(amountToCalculate);
+    }
+    else
+        new = amountToCalculate / penny;
+    if (new >= 1)
+    {
+        calcNumPennys(amountToCalculate);
+        calcTotPennys(amountToCalculate);
+    }
     return numQuarters + numDimes + numNickels + numPennys;
 }
