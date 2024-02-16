@@ -1,6 +1,6 @@
 #include <cs50.h>
 #include <stdio.h>
-//////////////////////////////////////
+
 const int quarter = 25;
 const int dime = 10;
 const int nickel = 5;
@@ -38,7 +38,8 @@ int main(void)
     printf("%i x pennys = %i\n", numPennys, totPennys);
     printf("---------------\n= %i total # of coins\n", coins);
 }
-//////////////////////////////////////
+
+// Functions to calculate the number of coins, and total sum of respective coins.
 int calcNumQuarters(int amountToCalculate)
 {
     numQuarters = amountToCalculate / quarter;
@@ -47,10 +48,8 @@ int calcNumQuarters(int amountToCalculate)
 int calcTotQuarters(int amountToCalculate)
 {
     totQuarters = (numQuarters * quarter);
-    rem = amountToCalculate - totQuarters;
     return totQuarters;
 }
-//////////////////////////////////////
 int calcNumDimes(int amountToCalculate)
 {
     numDimes = rem / dime;
@@ -59,10 +58,8 @@ int calcNumDimes(int amountToCalculate)
 int calcTotDimes(int amountToCalculate)
 {
     totDimes = (numDimes * dime);
-    rem = rem - totDimes;
     return totDimes;
 }
-//////////////////////////////////////
 int calcNumNickels(int amountToCalculate)
 {
     numNickels = rem / nickel;
@@ -71,10 +68,8 @@ int calcNumNickels(int amountToCalculate)
 int calcTotNickels(int amountToCalculate)
 {
     totNickels = (numNickels * nickel);
-    rem = rem - totNickels;
     return totNickels;
 }
-//////////////////////////////////////
 int calcNumPennys(int amountToCalculate)
 {
     numPennys = rem / penny;
@@ -83,39 +78,40 @@ int calcNumPennys(int amountToCalculate)
 int calcTotPennys(int amountToCalculate)
 {
     totPennys = (numPennys * penny);
-    rem = rem - totPennys;
     return totPennys;
 }
-//////////////////////////////////////
+
+// Process remaining amount
+int calcRem(int amountToCalculate, int totCoins)
+{
+    rem = amountToCalculate - totCoins;
+    return rem;
+}
+
+// This would have been useful for arrays/switch loops to save processing time for amounts like 1, 4, 5, 19, 51 where not all coins need to be processed.
+// int divideCoins(int amountToCalculate, int coin)
+// {
+//     return amountToCalculate / coin;
+// }
+
+// This function calls each function to get the total number of coins required. It also ensures other functions run to get the sum of the coins.
 int calcCoins(int amountToCalculate)
 {
-    int new = amountToCalculate / quarter;
+    calcNumQuarters(amountToCalculate);
+    calcTotQuarters(amountToCalculate);
+    calcRem(amountToCalculate, totQuarters);
 
-    if (new >= 1)
-    {
-        calcNumQuarters(amountToCalculate);
-        calcTotQuarters(amountToCalculate);
-    }
-    else
-        new = amountToCalculate / dime;
-    if (new >= 1)
-    {
-        calcNumDimes(amountToCalculate);
-        calcTotDimes(amountToCalculate);
-    }
-    else
-        new = amountToCalculate / nickel;
-    if (new >= 1)
-    {
-        calcNumNickels(amountToCalculate);
-        calcTotNickels(amountToCalculate);
-    }
-    else
-        new = amountToCalculate / penny;
-    if (new >= 1)
-    {
-        calcNumPennys(amountToCalculate);
-        calcTotPennys(amountToCalculate);
-    }
+    calcNumDimes(rem);
+    calcTotDimes(rem);
+    calcRem(rem, totDimes);
+
+    calcNumNickels(rem);
+    calcTotNickels(rem);
+    calcRem(rem, totNickels);
+
+    calcNumPennys(rem);
+    calcTotPennys(rem);
+    calcRem(rem, totPennys);
+
     return numQuarters + numDimes + numNickels + numPennys;
 }
