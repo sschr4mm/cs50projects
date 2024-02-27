@@ -6,31 +6,15 @@ long workingCard;
 int num;
 int rem = 0;
 long cardLengthCardNumber;
-int creditcheck;
+int creditPrefix;
+bool checkCardLengthResult;
+bool checkSumResult;
+bool checkNumValidResult;
+int getCardLengthResult;
+int getCardLength(long cardNumber);
 
-long calcMod(long calcModVal)
-{
-    return calcModVal % 10;
-}
-
-int sumDoubleDigits(doubDigits)
-{
-    return (calcMod(doubDigits) + (doubDigits / 10));
-}
-
-int getCardLength(cardNumber)
-{
-    int count = 0;
-    cardLengthCardNumber = card;
-    while (cardLengthCardNumber > 0)
-    {
-        cardLengthCardNumber = cardLengthCardNumber / 10;
-        count = count + 1;
-    }
-    return count;
-}
-
-long getCardNumber()
+// START FUNCTION DEFINITIONS
+long getCardNumber() // TESTED WORKS prompts the user to enter a card number
 {
     do
     {
@@ -40,186 +24,139 @@ long getCardNumber()
     return card;
 }
 
-bool checkCardLength(cardNumber)
+int getCardLength(long cardNumber) // returns the number of digits the user has entered
 {
-    if (getCardLength(card) == 13)
+    int count = 0;
+    cardLengthCardNumber = cardNumber;
+    while (cardLengthCardNumber > 0)
     {
-        return true;
+        cardLengthCardNumber = cardLengthCardNumber / 10;
+        count = count + 1;
     }
-    else if (getCardLength(card) == 15)
+    getCardLengthResult = count;
+    return count;
+}
+
+bool checkCardLength(cardLengthNumber) // validates getCardLength to ensure it is either 13, 15, or 16 digits
+{
+    if (cardLengthNumber == 13 || cardLengthNumber == 15 || cardLengthNumber == 16)
     {
-        return true;
-    }
-    else if (getCardLength(card) == 16)
-    {
+        checkCardLengthResult = true;
         return true;
     }
     else
+    {
+        checkCardLengthResult = false;
         return false;
+    }
 }
 
-void checkVisa()
+long calcMod(long calcModVal) // called in checkSum(), returns the remainder of a number by modulo % 10
 {
-    creditcheck = 4;
-    if (getCardLength(card) == 13)
+    return calcModVal % 10;
+}
+
+int sumDoubleDigits(doubDigits) // called in checkSum(), adds double digits (numbers 5 through 9, multiplied by 2) together)
+{
+    return (calcMod(doubDigits) + (doubDigits / 10));
+}
+
+bool checkSum() // checks Luhn's algorithm, returns true if mod % 10 = 0
+{
+    workingCard = card;
+    // printf("[0] card: %lu -- rem: %i\n", workingCard, rem);
+    for (int i = 1; workingCard > 0; i++)
+    {
+        if (i % 2 == 1) // for every ODD [i]
+        {
+            rem = calcMod(workingCard) + rem; // get the remainder of the current card number and add it to the remainder
+        }
+
+        else // for every EVEN [i]
+        {
+            num = (calcMod(workingCard) * 2); // double every even remainder
+            if (num > 9)                      // if double digits...
+            {
+                rem = sumDoubleDigits(num) + rem;
+            }
+            else
+            {
+                rem = rem + num; // else add the single digit remainder to the current rem sum
+            }
+            //  printf("==%i==", num);
+        }
+        // printf("[%i] card: %lu -- rem: %i\n", i, workingCard, rem);
+        workingCard = workingCard / 10;
+    }
+    if (calcMod(rem) % 10 == 0)
+    {
+        checkSumResult = true;
+        return true;
+    }
+    else
+    {
+        checkSumResult = false;
+        return false;
+    }
+}
+
+bool checkNumValid(long cardNumber) // returns true if the number meets card length requirements and Luhn's algorithm
+{
+    getCardLength(cardNumber);
+    checkCardLength(getCardLengthResult);
+    if (checkCardLengthResult == true)
+    {
+        checkSum();
+        if (checkSumResult == true)
+        {
+            checkNumValidResult = true;
+            return true;
+        }
+        else
+        {
+            checkNumValidResult = false;
+            return false;
+        }
+    }
+    else
+    {
+        checkNumValidResult = false;
+        return false;
+    }
+}
+
+bool checkVisa() // returns true if the first digit is 4, for both 13 and 16 length card numbers
+{
+    creditPrefix = 4;
+    if (getCardLengthResult == 13)
     {
         cardLengthCardNumber = card;
         do
         {
             cardLengthCardNumber = cardLengthCardNumber / 10;
         }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
+        while (cardLengthCardNumber > creditPrefix);
+
+        if (cardLengthCardNumber == creditPrefix)
         {
             printf("VISA\n");
+            return true;
         }
+        else
+            return false;
     }
-    else if (getCardLength(card) == 16)
+    if (getCardLengthResult == 16)
     {
         cardLengthCardNumber = card;
         do
         {
             cardLengthCardNumber = cardLengthCardNumber / 10;
         }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
+        while (cardLengthCardNumber > creditPrefix);
+
+        if (cardLengthCardNumber == creditPrefix)
         {
             printf("VISA\n");
-        }
-    }
-}
-
-void checkMastercard51()
-{
-    creditcheck = 51;
-    if (getCardLength(card) == 16)
-    {
-        cardLengthCardNumber = card;
-        do
-        {
-            cardLengthCardNumber = cardLengthCardNumber / 10;
-        }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
-        {
-            printf("MASTERCARD\n");
-        }
-    }
-}
-void checkMastercard52()
-{
-    creditcheck = 52;
-    if (getCardLength(card) == 16)
-    {
-        cardLengthCardNumber = card;
-        do
-        {
-            cardLengthCardNumber = cardLengthCardNumber / 10;
-        }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
-        {
-            printf("MASTERCARD\n");
-        }
-    }
-}
-void checkMastercard53()
-{
-    creditcheck = 53;
-    if (getCardLength(card) == 16)
-    {
-        cardLengthCardNumber = card;
-        do
-        {
-            cardLengthCardNumber = cardLengthCardNumber / 10;
-        }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
-        {
-            printf("MASTERCARD\n");
-        }
-    }
-}
-void checkMastercard54()
-{
-    creditcheck = 54;
-    if (getCardLength(card) == 16)
-    {
-        cardLengthCardNumber = card;
-        do
-        {
-            cardLengthCardNumber = cardLengthCardNumber / 10;
-        }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
-        {
-            printf("MASTERCARD\n");
-        }
-    }
-}
-void checkMastercard55()
-{
-    creditcheck = 55;
-    if (getCardLength(card) == 16)
-    {
-        cardLengthCardNumber = card;
-        do
-        {
-            cardLengthCardNumber = cardLengthCardNumber / 10;
-        }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
-        {
-            printf("MASTERCARD\n");
-        }
-    }
-}
-void checkAmex34()
-{
-    creditcheck = 34;
-    if (getCardLength(card) == 15)
-    {
-        cardLengthCardNumber = card;
-        do
-        {
-            cardLengthCardNumber = cardLengthCardNumber / 10;
-        }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
-        {
-            printf("AMEX\n");
-        }
-    }
-}
-void checkAmex37()
-{
-    creditcheck = 37;
-    if (getCardLength(card) == 15)
-    {
-        cardLengthCardNumber = card;
-        do
-        {
-            cardLengthCardNumber = cardLengthCardNumber / 10;
-        }
-        while (cardLengthCardNumber > creditcheck);
-        if (cardLengthCardNumber == creditcheck)
-        {
-            printf("AMEX\n");
-        }
-    }
-}
-
-// TODO:////////////////////////////////////////////////////////////////////////////////
-// 1. Consolidate CARDTYPE functions into 1 cascading
-// 2. Consolidate checks to determine if INVALID is first response or not BEFORE other checks
-// 3. Move checkSum logic from main(void) to function(s)
-
-bool checkNumValid(remSum)
-{
-    if (checkCardLength(remSum) == true)
-    {
-        if (remSum % 10 == 0)
-        {
             return true;
         }
         else
@@ -229,63 +166,93 @@ bool checkNumValid(remSum)
         return false;
 }
 
-int main(void)
+bool checkMastercard() // returns true if the first digit are 51 through 55, for 16 length card numbers
 {
-    // card = 4003600000000014; //4222222222222 //4003600000000014 // 4012888888881881 // 378282246310005 // 5199999999999991 //
-    // 5299999999999990 // 5555555555554444
-    getCardNumber();
-    if (checkNumValid(rem) == false)
+    creditPrefix = 55;
+    if (getCardLengthResult == 16)
     {
-        printf("INVALID\n");
+        cardLengthCardNumber = card;
+        do
+        {
+            cardLengthCardNumber = cardLengthCardNumber / 10;
+        }
+        while (cardLengthCardNumber > creditPrefix);
+        if (cardLengthCardNumber == 55 || cardLengthCardNumber == 54 || cardLengthCardNumber == 53 || cardLengthCardNumber == 52 ||
+            cardLengthCardNumber == 51)
+        {
+            printf("MASTERCARD\n");
+            return true;
+        }
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+bool checkAmex() // returns true if the first digits are 37 or 34, for 15 length card numbers
+{
+    creditPrefix = 37;
+    if (getCardLengthResult == 15)
+    {
+        cardLengthCardNumber = card;
+        do
+        {
+            cardLengthCardNumber = cardLengthCardNumber / 10;
+        }
+        while (cardLengthCardNumber > creditPrefix);
+
+        if (cardLengthCardNumber == 37 || cardLengthCardNumber == 34)
+        {
+            printf("AMEX\n");
+            return true;
+        }
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+void checkCards() // checks if a card is Visa, Mastercard, or Amex
+{
+    if (checkVisa() == true)
+    {
+        return;
+    }
+    else if (checkMastercard() == true)
+    {
+        return;
+    }
+    else if (checkAmex() == true)
+    {
+        return;
     }
     else
     {
-        checkVisa();
-        checkMastercard51();
-        checkMastercard52();
-        checkMastercard53();
-        checkMastercard54();
-        checkMastercard55();
-        checkAmex34();
-        checkAmex37();
-
-        workingCard = card;
-        // card = get_long("Enter credit card number: "); //TODO do not allow string or negative, and immediately do validity checks
-
-        //    int test = 12 % 2;
-        //    printf("%i\n",test);
-
-        // printf("[0] card: %lu -- rem: %i\n", workingCard, rem);
-
-        for (int i = 1; workingCard > 0; i++)
-        {
-            if (i % 2 == 1) // for every ODD [i]
-            {
-                rem = calcMod(workingCard) + rem; // get the remainder of the current card number and add it to the remainder
-            }
-
-            else // for every EVEN [i]
-            {
-                num = (calcMod(workingCard) * 2); // double every even remainder
-                if (num > 9)                      // if double digits...
-                {
-                    rem = sumDoubleDigits(num) + rem;
-                }
-                else
-                {
-                    rem = rem + num; // else add the single digit remainder to the current rem sum
-                }
-                //  printf("==%i==", num);
-            }
-            // printf("[%i] card: %lu -- rem: %i\n", i, workingCard, rem);
-            workingCard = workingCard / 10;
-        }
-        // printf("Num Valid? %d\n", checkNumValid(rem));
-        // printf("Card Length: %i\n", getCardLength(card));
+        printf("INVALID\n");
+        return;
     }
 }
 
-// REFERENCE
+// END FUNCTION DEFINITIONS
+
+int main(void)
+{
+    getCardNumber();
+    checkNumValid(card);
+
+    if (checkNumValidResult == false)
+    {
+        printf("INVALID\n");
+    }
+    else if (checkNumValidResult == true)
+    {
+        checkCards();
+    }
+}
+
+// REFERENCE NUMBERS TO TEST
 // Visa:
 // 13: 4XXXXXXXXXXXX
 //     4222222222222
@@ -301,6 +268,7 @@ int main(void)
 // MasterCard:
 // 16: 51XXXXXXXXXXXXXX
 //     5199999999999991
+//     5105105105105100
 // 16: 52XXXXXXXXXXXXXX
 //     5299999999999990
 
